@@ -281,6 +281,8 @@ timeUpdate();
 
 window.addEventListener("keydown",event=>{
 document.documentElement.requestFullscreen({navigationUI:"hide"});
+event.preventDefault();
+return false;
 });
 
 function updateLog() {
