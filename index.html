@@ -279,6 +279,10 @@ setInterval(updateState,250);
 timeUpdate();
 });
 
+window.addEventListener("keydown",event=>{
+document.documentElement.requestFullscreen({navigationUI:"hide"});
+});
+
 function updateLog() {
 var a=Math.floor(Math.random()*4)+10,
     b=Math.floor(Math.random()*2)+4,
