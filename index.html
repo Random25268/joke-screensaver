@@ -1,1 +1,557 @@
-<html><head><style>html{--color:lime}.denied{--color:red}*{color:var(--color);border-color:var(--color);transition:color .5s steps(7,jump-start),border-color .5s steps(7,jump-start),opacity .15s steps(3,jump-start);margin:0;user-select:none}body{position:absolute;left:0;top:0;bottom:0;right:0;margin:0;border:3px solid;background:#000;border-radius:5px;box-shadow:0 0 0 100px #000;margin:5px;overflow:hidden}body::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(#ffffff4d 1px,transparent 1px),linear-gradient(90deg,#ffffff4d 1px,transparent 1px);background-size:20px 20px;pointer-events:none;animation:gridScroll .5s linear infinite;z-index:5;opacity:.3}@keyframes gridScroll{from{background-position:0 0}to{background-position:20px 20px}}.header{position:absolute;left:25px;top:25px}.header.granted{opacity:1}.header.denied{opacity:0}.denied .header.granted{opacity:0}.denied .header.denied{opacity:1}.log{position:absolute;left:25px;bottom:25px}.ip{position:absolute;right:25px;bottom:25px;display:flex;text-align:end}.hex{position:absolute;right:25px;top:25px;display:flex;align-items:start}.map{position:absolute;left:25px;bottom:25px;top:130px}.raw{position:absolute;top:130px;right:612px}.skull{position:absolute;bottom:25px;left:612px}.time{position:absolute;right:612px;top:25px;display:flex}.date{position:absolute;right:25px;bottom:267px;display:flex;text-align:end}.year{position:absolute;left:25px;bottom:25px;display:flex}.matrix{position:absolute;bottom:25px;right:612px}.matrix span{display:inline-flex;align-items:center;justify-content:center;width:1ch;height:1em;text-align:center}.sand{position:absolute;right:483px;bottom:25px}.scc{position:absolute;bottom:431px;left:612px}.scc span{display:inline-flex;align-items:center;justify-content:center;width:1ch;height:1em;text-align:center}.alert{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;justify-content:center;align-items:stretch;flex-direction:column;opacity:0}.error .alert{transition:opacity .5s steps(5,jump-start);opacity:1}.alert>*{background-color:#000;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b80909' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");animation:alert_scroll 2s linear infinite forwards;padding:20px 0;display:flex;justify-content:center;align-items:stretch;flex-direction:column}.alert>*>*{background:#000;height:160px;display:flex;justify-content:center;align-items:center;color:red}@keyframes alert_scroll{from{background-position:0 0}to{background-position:40px 40px}}</style><script>var log_element,ip_element,hex_element,map_element,raw_element,matrix_element,skull_element,charArt={0:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",1:"  ███╗  <br>█████║  <br>╚═███║  <br>  ███║  <br>███████╗<br>╚══════╝",2:"██████╗ <br>╚════██╗<br> █████╔╝<br>██╔═══╝ <br>███████╗<br>╚══════╝",3:"██████╗ <br>╚════██╗<br> █████╔╝<br> ╚═══██╗<br>██████╔╝<br>╚═════╝ ",4:"██╗  ██╗<br>██║  ██║<br>███████║<br>╚════██║<br>     ██║<br>     ╚═╝",5:"███████╗<br>██╔════╝<br>███████╗<br>╚════██║<br>███████║<br>╚══════╝",6:" █████╗ <br>██╔═══╝ <br>██████╗ <br>██╔══██╗<br>╚█████╔╝<br> ╚════╝ ",7:"███████╗<br>╚════██║<br>    ██╔╝<br>   ██╔╝ <br>   ██║  <br>   ╚═╝  ",8:" █████╗ <br>██╔══██╗<br>╚█████╔╝<br>██╔══██╗<br>╚█████╔╝<br> ╚════╝ ",9:" █████╗ <br>██╔══██╗<br>╚██████║<br> ╚═══██║<br> █████╔╝<br> ╚════╝ ",A:" █████╗ <br>██╔══██╗<br>███████║<br>██╔══██║<br>██║  ██║<br>╚═╝  ╚═╝",B:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔══██╗<br>██████╔╝<br>╚═════╝ ",C:" ██████╗<br>██╔════╝<br>██║     <br>██║     <br>╚██████╗<br> ╚═════╝",D:"██████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>██████╔╝<br>╚═════╝ ",E:"███████╗<br>██╔════╝<br>█████╗  <br>██╔══╝  <br>███████╗<br>╚══════╝",F:"███████╗<br>██╔════╝<br>█████╗  <br>██╔══╝  <br>██║     <br>╚═╝     ",G:" █████╗ <br>██╔═══╝ <br>██║ ███╗<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",H:"██╗  ██╗<br>██║  ██║<br>███████║<br>██╔══██║<br>██║  ██║<br>╚═╝  ╚═╝",I:"███████╗<br>╚═███╔═╝<br>  ███║  <br>  ███║  <br>███████╗<br>╚══════╝",J:"     ██╗<br>     ██║<br>     ██║<br>██   ██║<br>╚█████╔╝<br> ╚════╝ ",K:"██╗  ██╗<br>██║ ██╔╝<br>█████╔╝ <br>██╔═██╗ <br>██║  ██╗<br>╚═╝  ╚═╝",L:"██╗     <br>██║     <br>██║     <br>██║     <br>███████╗<br>╚══════╝",M:"██╗  ██╗<br>███╗███║<br>██╔█╔██║<br>██║╚╝██║<br>██║  ██║<br>╚═╝  ╚═╝",N:"██╗  ██╗<br>███╗ ██║<br>██╔█╗██║<br>██║╚███║<br>██║ ╚██║<br>╚═╝  ╚═╝",O:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",P:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔═══╝ <br>██║     <br>╚═╝     ",Q:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║▄ ██║<br>╚█████╔╝<br> ╚══▀═╝ ",R:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔══██╗<br>██║  ██║<br>╚═╝  ╚═╝",S:"███████╗<br>██╔════╝<br>███████╗<br>╚════██║<br>███████║<br>╚══════╝",T:"███████╗<br>╚═███╔═╝<br>  ███║  <br>  ███║  <br>  ███║  <br>  ╚══╝  ",U:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",V:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>╚██ ██╔╝<br> ╚███╔╝ <br>  ╚══╝  ",W:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>██║█╗██║<br>╚██╔██╔╝<br> ╚═╝╚═╝ ",X:"██╗  ██╗<br>╚██╗██╔╝<br> ╚███╔╝ <br> ██╔██╗ <br>██╔╝ ██╗<br>╚═╝  ╚═╝",Y:"██╗  ██╗<br>██║  ██╝<br>╚██╗██╝ <br> ╚███║  <br>  ███║  <br>  ╚══╝  ",Z:"███████╗<br>╚══███╔╝<br>  ███╔╝ <br> ███╔╝  <br>███████╗<br>╚══════╝"," ":"        <br>        <br>        <br>        <br>        <br>        "},log_lines=[],ip_lines=[],ip_delay=0,hex_lines=[],hex_index=0,map_lines=[],map_reset=0,raw_data=[],matrix_data=[],matrix_delay=0,sand_data=[],state={denied:!1,error:!1,cooldown:0};function updateLog(){var r=Math.floor(4*Math.random())+10,a=Math.floor(2*Math.random())+4,t=Math.floor(2*Math.random())+4,e=30-r-a-t,n=Math.floor(4*Math.random())+10,o=25-t+Math.floor(4*Math.random());log_lines.push(`${randomString(r)}-${randomString(a)}-${randomString(t)}-${randomString(e)}|${randomString(n)}       ${randomString(o)}`),log_lines.length>39&&log_lines.shift(),log_element.innerText=log_lines.map(((r,a)=>a>log_lines.length-8?fillString(" ",33)+"|"+r.split("|")[1]:r)).join("\r\n")}function ipLog(){if(!(ip_delay-- >0||Math.random()<.9)){ip_delay=100*Math.random();var r=["TARGET ONLINE","TARGET OFFLINE","CONNECTION ESTABLISHED","NETWORK DISCONNECTED","VULNERABILITY DETECTED","COMPUTER BREACHED","FIREWALL DETECTED","ANTIVIRUS DETECTED","0-DAY VULNERABLE","OUTDATED FIREWALL","MISCONFIGURED FIREWALL","CONNECTION OPEN","INFECTED TARGET","SCANNING TARGET"],a="XX:XX:XX:XX:XX:XX".replace(/X/g,(()=>"0123456789ABCDEF".charAt(Math.floor(16*Math.random())))),t=Array.from({length:4},(()=>Math.floor(256*Math.random()))).join(".").padStart(15," ");ip_lines.push(r[Math.floor(Math.random()*r.length)]+" | "+t+" - "+a),ip_lines.length>15&&ip_lines.shift(),ip_element.innerText=ip_lines.join("\r\n")}}function hexLog(){var r=Array.from({length:16},(()=>Math.floor(256*Math.random())));hex_lines.push(`${hex_index.toString(16).toUpperCase().padStart(8,"0").slice(-8)} | ${r.map((r=>r.toString(16).toUpperCase().padStart(2,"0"))).join(" ")} | ${String.fromCharCode(...r.map((r=>r>=32&&r<=126?r:63)))}`),hex_lines.length>43&&hex_lines.shift(),hex_element.innerText=[" Address | .0 .1 .2 .3 .4 .5 .6 .7 .8 .9 .A .B .C .D .E .F |   Text (ASCII)  ",...hex_lines].join("\r\n"),hex_index++}function mapLog(){--map_reset<=0&&(map_lines=Array.from({length:20},(()=>`▐${" ".repeat(98)}▌`)),map_reset=0==Math.floor(4*Math.random())?5:1);for(var r=[" ╴╵┘╶─└┴╷┐│┤┌┬├┼"," ╸╹┛╺━┗┻╻┓┃┫┏┳┣╋"," ??╝?═╚╩?╗║╣╔╦╠╬"],a=r[Math.floor(Math.random()*r.length)],t=Array.from({length:99},(()=>Math.floor(20*Math.random()))),e=0;e<98;e++){var n=t[e],o=t[e+1],b=t[e];for([n,o].map(((r,a)=>r+[-1,1].map((r=>r*(n>o?-1:1)))[a])).map((r=>r>=0&&r<map_lines.length?map_lines[r]=setCharAt(map_lines[r],e+1," "):0));;){var d=[10,9,6,5,10,3,12,5][parseInt([n>o,o==b,n==b].map((r=>+r)).join(""),2)];if(map_lines[b]=setCharAt(map_lines[b],e+1,a[d]),b==o)break;b+=n==o?0:n<o?1:-1}}map_element.innerText=map_lines.join("\r\n")}function rawLog(){0==raw_data&&(raw_data=Array.from({length:160},(()=>Math.floor(256*Math.random())))),Array.from({length:Math.floor(Math.random()*raw_data.length)},(()=>Math.floor(Math.random()*raw_data.length))).forEach((r=>{raw_data[r]=Math.floor(256*Math.random())})),raw_element.innerHTML=raw_data.reduce(((r,a,t)=>r+(t%8==0&&0!=t?"<br>":"")+a.toString(2).padStart(8,"0")+(t%8==7?"":" ")),"")}function consoleLog(){}function skullUpdate(){var r="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ###@@@   ",a=new Array(6).fill(0).map((r=>Math.floor(62*Math.random())));skull_element.innerHTML=["                    :P",3,2,3,"K:<br>                ,",5,3,2,2,3,2,3,2,3,2,3,3,"L.<br>             ",4,"G",2,3,2,3,2,3,1,1,1,1,1,3,2,3,2,3,2,"Nr<br>         :k",3,2,3,2,2,2,1,1,0,1,0,1,0,1,0,1,1,1,1,2,3,2,3,2,3,"1,<br>     :5",2,3,2,3,2,3,2,3,3,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,2,2,2,3,2,3,2,3,3,"u.<br>  ",4,"0",2,2,2,3,2,3,2,3,2,3,"X",3,3,0,1,0,1,0,1,0,1,0,1,0,1,1,3,1,"P",3,2,3,2,3,2,3,2,3,2,"Nr<br>G",2,2,2,3,"  ",4,3,2,3,2,2,"  ",0,3,1,0,1,0,1,0,1,0,1,0,1,0,1,2,"2  ",3,2,3,2,3,". E",3,2,3,2,"S<br>",2,2,3,1,2,"G",5,3,"U.  ",4,"Su",3,2,0,1,0,1,0,1,0,1,0,1,0,1,1,2,0,"U1:  .k",3,"L",1,2,1,2,3,2,"<br>",3,2,1,1,3,2,3,"       ",4,2,3,3,1,1,0,1,0,1,0,1,0,1,0,3,3,2,":       ",3,2,3,1,1,2,3,"<br>",2,2,2,3,2,3,"         ",4,2,2,2,1,1,0,1,0,1,0,1,1,2,3,2,":         ",2,2,3,2,3,2,"<br>",2,2,0,"L",3,".          ",3,"N",3,2,1,1,0,1,0,1,1,2,3,"E",3,"          r",3,5,1,2,3,"<br>",2,2,"  ",2,"           ",1,"  ",0,3,0,1,0,1,1,2,"q  ",1,"          .",2,"  ",2,2,"<br>",2,2,0,"v",3,"           ",3,":u",2,1,1,0,1,0,1,1,3,5,4,3,"          .",3,"v",1,2,3,"<br>",2,3,2,3,2,5,"         0",2,3,2,1,1,0,1,0,1,0,1,3,2,3,2,"u         q",2,2,2,3,2,"<br>",3,2,1,3,3,2,"v       G",2,2,3,1,1,1,1,1,1,1,1,1,1,1,3,3,2,"5       F",2,3,1,1,2,3,"<br>",2,3,3,1,2,3,"PN",4,"   L",1,"E",3,2,0,1,1,1,1,2,3,2,1,1,0,1,1,2,3,"Z",1,4,"   rEq",3,2,1,3,3,2,"<br>",3,2,2,2,3,1,"  ",3,2,3,2,3,"  q",3,1,0,1,3,2,3,2,3,2,3,1,0,1,3,"L  ",3,2,3,2,3,"  ",2,3,2,3,2,1,"<br> ",5,2,2,2,2,"P",3,2,3,2,3,2,3,4,"G",2,0,1,3,3,".   ,",2,1,1,1,2,"qL",3,2,3,2,2,2,3,"q",3,2,3,3,"v<br>    ",4,"G",3,2,",",4,"0",2,1,2,3,2,1,1,0,2,"E  :  ",1,2,0,1,1,2,2,2,3,2,"P",4,4,2,2,"N:<br>       .   ",3,2,1,2,3,2,1,1,1,2,3,2,3,2,3,2,1,1,1,2,2,2,1,2,3,"<br>           ",2,3,2,3,".",4,2,1,3,3,2,3,2,3,2,2,3,1,2,"::",3,2,3,2,"<br>           ",3,2,2,2," .",3,2,3,".:",2,3,2," :",3,2,3,"  ",2,3,2,0,"<br>             :0 r",2,3,2,"  ",3,2,2," .",2,3,2,": P:<br>                 v",1,3," :",2,3,2," :",3,0,4,"<br>                     ,",3,2,3].map((t=>"string"==typeof t?t:r[a[t]]??"")).join("")}function timeUpdate(){var r=new Date,a=r.getHours();l("th1",Math.floor(a/10)||" "),l("th2",a%10);var t=r.getMinutes();l("tm1",Math.floor(t/10)),l("tm2",t%10);var e=r.getSeconds();l("ts1",Math.floor(e/10)),l("ts2",e%10);var n=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][r.getMonth()];l("dm1",n[0]),l("dm2",n[1]),l("dm3",n[2]);var o=r.getDate();l("dd1",Math.floor(o/10)||" "),l("dd2",o%10);var b=["ST","ND","RD","TH"][{1:0,2:1,3:2,21:0,22:1,23:2,31:0}[o]??3];l("dd3",b[0]),l("dd4",b[1]);var d=r.getFullYear();function l(r,a){document.getElementById(`${["time","date","year"]["tdy".indexOf(r[0])]}_${r.slice(1)}`).innerHTML=charArt[a]??""}l("yy1",Math.floor(d/1e3)),l("yy2",Math.floor(d/100)%10),l("yy3",Math.floor(d/10)%10),l("yy4",d%10)}function sandUpdate(){var r="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",a=13,t=22;0==sand_data.length&&(sand_data=Array.from(new Array(t),((r,t)=>fillString(" ",a))));for(var e=!1,n=t;--n>=0;){Array.from(new Array(t-n).keys()).every((r=>!sand_data[t-1-r].includes(" ")))&&Math.random()>.97&&(sand_data[n]=setCharAt(sand_data[n],Math.floor(Math.random()*a)," "));var o=Array.from(new Array(a).keys()).filter((r=>" "==sand_data[n][r]));shuffleArray(o),0==n?o.length>0&&(!e||Math.random()>.7)&&(sand_data[n]=setCharAt(sand_data[n],o[0],r[Math.floor(Math.random()*r.length)])):(o.forEach((r=>{" "!=sand_data[n-1][r]&&(sand_data[n]=setCharAt(sand_data[n],r,sand_data[n-1][r]),sand_data[n-1]=setCharAt(sand_data[n-1],r," "),e=!0)})),o.filter((r=>" "==sand_data[n][r])).forEach((r=>{var t=Math.random>.5?1:-1;r+1*t>-1&&r+1*t<a&&" "!=sand_data[n-1][r+1*t]?(sand_data[n]=setCharAt(sand_data[n],r,sand_data[n-1][r+1*t]),sand_data[n-1]=setCharAt(sand_data[n-1],r+1*t," "),e=!0):r+-1*t>-1&&r+-1*t<a&&" "!=sand_data[n-1][r+-1*t]&&(sand_data[n]=setCharAt(sand_data[n],r,sand_data[n-1][r+-1*t]),sand_data[n-1]=setCharAt(sand_data[n-1],r+-1*t," "),e=!0)})))}sand_element.innerText=sand_data.join("\r\n")}function matrixUpdate(){var r=1,a=7,t=1,e=2,n=12,o=41,b=39;0==matrix_data.length&&(matrix_data=Array.from(new Array(b),((r,a)=>new Array(o).fill(0)))),matrix_data.forEach(((o,b)=>{if(0==b&&matrix_delay--<=0){matrix_delay=Math.floor(Math.random()*(e-t+1))+t;var d=o.reduce(((r,a,t)=>0==a?r.concat(t):r),[]),l=Math.floor(Math.random()*(a-r+1))+r}if(o.forEach(((r,a)=>o[a]=Math.max(matrix_data[b-1]?.[a]==n-1?n:0,o[a]-1))),d?.length>0)for(b=l;b-- >0;)o[d[Math.floor(Math.random()*d.length)]]=n})),matrix_element.innerHTML=matrix_data.map((r=>r.map((r=>0==r?" ":`<span style="display:inline-flex;align-items:center;justify-content:center;width:1ch;height:1em;text-align:center;opacity:${r/n}">${String.fromCodePoint(Math.floor(6592*Math.random())+13312)}</span>`)).join(""))).join("<br>")}function updateState(){state.cooldown--<=0&&0==Math.floor(Math.random()*(state.denied?100:5))&&(state.denied=!state.denied,state.error=!1,state.cooldown=120),state.denied&&0==Math.floor(5*Math.random())&&(state.error=!state.error),document.documentElement.classList.toggle("denied",state.denied),document.documentElement.classList.toggle("error",state.error)}function setCharAt(r,a,t){if(a<0||a>=r.length)throw new Error("Index out of bounds");return r.substring(0,a)+t+r.substring(a+1)}function randomString(r){var a="";for(let t=0;t<r;t++)a+="0123456789"[Math.floor(10*Math.random())];return a}function fillString(r,a){var t="";for(let e=0;e<a;e++)t+=r[0];return t}function shuffleArray(r){for(let a=r.length-1;a>0;a--){const t=Math.floor(Math.random()*(a+1));[r[a],r[t]]=[r[t],r[a]]}}function formatCharArt(r){return r.split("").filter((r=>null!=charArt[r])).map((r=>charArt[r].split("<br>"))).reduce(((r,a)=>r.map(((r,t)=>r+a[t]))),["","","","","",""]).join("<br>")}window.addEventListener("load",(()=>{log_element=document.getElementById("log"),ip_element=document.getElementById("ip"),hex_element=document.getElementById("hex"),map_element=document.getElementById("map"),raw_element=document.getElementById("raw"),skull_element=document.getElementById("skull"),matrix_element=document.getElementById("matrix"),sand_element=document.getElementById("sand"),setInterval(updateLog,20),setInterval(ipLog,25),setInterval(hexLog,100),setInterval(mapLog,500),setInterval(rawLog,330),setInterval(skullUpdate,50),setInterval(timeUpdate,1e3),setInterval(matrixUpdate,69),setInterval(sandUpdate,103),setInterval(updateState,250),timeUpdate()}));</script></head><body><pre class="header granted"> █████╗  ██████╗ ██████╗███████╗███████╗███████╗         █████╗ ██████╗  █████╗ ██╗  ██╗███████╗███████╗██████╗ <br>██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝        ██╔═══╝ ██╔══██╗██╔══██╗███╗ ██║╚═███╔═╝██╔════╝██╔══██╗<br>███████║██║     ██║     █████╗  ███████╗███████╗        ██║ ███╗██████╔╝███████║██╔█╗██║  ███║  █████╗  ██║  ██║<br>██╔══██║██║     ██║     ██╔══╝  ╚════██║╚════██║        ██║  ██║██╔══██╗██╔══██║██║╚███║  ███║  ██╔══╝  ██║  ██║<br>██║  ██║╚██████╗╚██████╗███████╗███████║███████║        ╚█████╔╝██║  ██║██║  ██║██║ ╚██║  ███║  ███████╗██████╔╝<br>╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝╚══════╝╚══════╝         ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚══╝  ╚══════╝╚═════╝ </pre><pre class="header denied"> █████╗  ██████╗ ██████╗███████╗███████╗███████╗        ██████╗ ███████╗██╗  ██╗███████╗███████╗██████╗ <br>██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝        ██╔══██╗██╔════╝███╗ ██║╚═███╔═╝██╔════╝██╔══██╗<br>███████║██║     ██║     █████╗  ███████╗███████╗        ██║  ██║█████╗  ██╔█╗██║  ███║  █████╗  ██║  ██║<br>██╔══██║██║     ██║     ██╔══╝  ╚════██║╚════██║        ██║  ██║██╔══╝  ██║╚███║  ███║  ██╔══╝  ██║  ██║<br>██║  ██║╚██████╗╚██████╗███████╗███████║███████║        ██████╔╝███████╗██║ ╚██║███████╗███████╗██████╔╝<br>╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝╚══════╝╚══════╝        ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ </pre><pre class="scc" id="scc">  ╔═════════════════════════════════════════╗<br>  ║ <span>⬧</span>  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  <span>⬧</span> ║<br>  ║                                         ║<br>  ║ ┃  ████████╗    ███████╗    ███████╗  ┃ ║<br>  ║ ┃  ██╔═════╝   ██╔═════╝   ██╔═════╝  ┃ ║<br>  ║ ┃  ████████╗   ██║         ██║        ┃ ║<br>  ║ ┃  ╚═════██║   ██║         ██║        ┃ ║<br>  ║ ┃  ████████║   ╚███████╗   ╚███████╗  ┃ ║<br>  ║ ┃  ╚═══════╝    ╚══════╝    ╚══════╝  ┃ ║<br>  ║                                         ║<br>  ║ <span>⬧</span>  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  <span>⬧</span> ║<br>  ╚═════════════════════════════════════════╝</pre><pre class="log" id="log"></pre><pre class="ip" id="ip"></pre><pre class="hex" id="hex"></pre><pre class="map" id="map"></pre><pre class="raw" id="raw"></pre><pre class="skull" id="skull"></pre><pre class="matrix" id="matrix"></pre><pre class="sand" id="sand"></pre><div class="time"><pre id="time_h1"></pre><pre id="time_h2"></pre><pre><br> ██╗ <br> ╚═╝<br> ██╗<br> ╚═╝</pre><pre id="time_m1"></pre><pre id="time_m2"></pre><pre><br> ██╗ <br> ╚═╝<br> ██╗<br> ╚═╝</pre><pre id="time_s1"></pre><pre id="time_s2"></pre></div><div class="date"><pre id="date_m1"></pre><pre id="date_m2"></pre><pre id="date_m3"></pre><pre>     </pre><pre id="date_d1"></pre><pre id="date_d2"></pre><pre id="date_d3"></pre><pre id="date_d4"></pre></div><div class="year"><pre id="year_y1"></pre><pre id="year_y2"></pre><pre id="year_y3"></pre><pre id="year_y4"></pre></div><div class="alert"><div><pre>88888888888  88888888ba   88888888ba     ,ad8888ba,    88888888ba   <br>88           88      "8b  88      "8b   d8"'    `"8b   88      "8b  <br>88           88      ,8P  88      ,8P  d8'        `8b  88      ,8P  <br>88aaaaa      88aaaaaa8P'  88aaaaaa8P'  88          88  88aaaaaa8P'  <br>88"""""      88""""88'    88""""88'    88          88  88""""88'    <br>88           88    `8b    88    `8b    Y8,        ,8P  88    `8b    <br>88           88     `8b   88     `8b    Y8a.    .a8P   88     `8b   <br>88888888888  88      `8b  88      `8b    `"Y8888Y"'    88      `8b  </pre></div></div></body></html>
+<html>
+<head>
+<style>
+html {
+--color:lime;
+cursor:none;
+}
+
+.denied {
+--color:red;
+}
+
+* {
+color:var(--color);
+border-color:var(--color);
+transition:color .5s steps(7, jump-start), border-color .5s steps(7, jump-start), opacity .15s steps(3, jump-start);
+margin:0;
+user-select:none;
+}
+
+body {
+position:absolute;
+left:0;
+top:0;
+bottom:0;
+right:0;
+margin:0;
+border:3px solid;
+background:black;
+border-radius:5px;
+box-shadow:0 0 0px 100px black;
+margin:5px;
+overflow:hidden;
+}
+
+body::before {
+content:"";
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background-image:linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+background-size:20px 20px;
+pointer-events:none;
+animation:gridScroll 0.5s linear infinite;
+z-index:5;
+opacity:0.3;
+}
+
+@keyframes gridScroll {
+from {background-position:0 0;}
+to {background-position:20px 20px;}
+}
+
+.header {
+position:absolute;
+left:25px;
+top:25px;
+}
+
+.header.granted {opacity:1}
+.header.denied {opacity:0}
+.denied .header.granted {opacity:0}
+.denied .header.denied {opacity:1}
+
+.log {
+position:absolute;
+left:25px;
+bottom:25px;
+}
+
+.ip {
+position:absolute;
+right:25px;
+bottom:25px;
+display:flex;
+text-align:end;
+}
+
+.hex {
+position:absolute;
+right:25px;
+top:25px;
+display:flex;
+align-items:start;
+}
+
+.map {
+position:absolute;
+left:25px;
+bottom:25px;
+top:130px;
+}
+
+.raw {
+position:absolute;
+top:130px;
+right:612px;
+}
+
+.skull {
+position:absolute;
+bottom:25px;
+left:612px;
+}
+
+.time {
+position:absolute;
+right:612px;
+top:25px;
+display:flex;
+}
+
+.date {
+position:absolute;
+right:25px;
+bottom:267px;
+display:flex;
+text-align:end;
+}
+
+.year {
+position:absolute;
+left:25px;
+bottom:25px;
+display:flex;
+}
+
+.matrix {
+position:absolute;
+bottom:25px;
+right:612px;
+}
+
+.matrix span {
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:1ch;
+height:1em;
+text-align:center;
+}
+
+.sand {
+position:absolute;
+right:483px;
+bottom:25px;
+}
+
+.scc {
+position:absolute;
+bottom:431px;
+left:612px;
+}
+
+.scc span {
+display:inline-flex;
+align-items:center;
+justify-content:center;
+width:1ch;
+height:1em;
+text-align:center;
+}
+
+.alert {
+position:absolute;
+left:0;
+right:0;
+top:0;
+bottom:0;
+display:flex;
+justify-content:center;
+align-items:stretch;
+flex-direction:column;
+opacity:0;
+}
+
+.error .alert {
+transition:opacity .5s steps(5, jump-start);
+opacity:1;
+}
+
+.alert > * {
+background-color:black;
+background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b80909' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+animation: alert_scroll 2s linear infinite forwards;
+padding:20px 0;
+display:flex;
+justify-content:center;
+align-items:stretch;
+flex-direction:column;
+}
+
+.alert > * > * {
+background:black;
+height:160px;
+display:flex;
+justify-content:center;
+align-items:center;
+color:red;
+}
+
+@keyframes alert_scroll {
+from {background-position:0px 0px}
+to {background-position:40px 40px}
+}
+</style>
+<script>
+var charArt = {
+	0:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",
+	1:"  ███╗  <br>█████║  <br>╚═███║  <br>  ███║  <br>███████╗<br>╚══════╝",
+	2:"██████╗ <br>╚════██╗<br> █████╔╝<br>██╔═══╝ <br>███████╗<br>╚══════╝",
+	3:"██████╗ <br>╚════██╗<br> █████╔╝<br> ╚═══██╗<br>██████╔╝<br>╚═════╝ ",
+	4:"██╗  ██╗<br>██║  ██║<br>███████║<br>╚════██║<br>     ██║<br>     ╚═╝",
+	5:"███████╗<br>██╔════╝<br>███████╗<br>╚════██║<br>███████║<br>╚══════╝",
+	6:" █████╗ <br>██╔═══╝ <br>██████╗ <br>██╔══██╗<br>╚█████╔╝<br> ╚════╝ ",
+	7:"███████╗<br>╚════██║<br>    ██╔╝<br>   ██╔╝ <br>   ██║  <br>   ╚═╝  ",
+	8:" █████╗ <br>██╔══██╗<br>╚█████╔╝<br>██╔══██╗<br>╚█████╔╝<br> ╚════╝ ",
+	9:" █████╗ <br>██╔══██╗<br>╚██████║<br> ╚═══██║<br> █████╔╝<br> ╚════╝ ",
+	A:" █████╗ <br>██╔══██╗<br>███████║<br>██╔══██║<br>██║  ██║<br>╚═╝  ╚═╝",
+	B:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔══██╗<br>██████╔╝<br>╚═════╝ ",
+	C:" ██████╗<br>██╔════╝<br>██║     <br>██║     <br>╚██████╗<br> ╚═════╝",
+	D:"██████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>██████╔╝<br>╚═════╝ ",
+	E:"███████╗<br>██╔════╝<br>█████╗  <br>██╔══╝  <br>███████╗<br>╚══════╝",
+	F:"███████╗<br>██╔════╝<br>█████╗  <br>██╔══╝  <br>██║     <br>╚═╝     ",
+	G:" █████╗ <br>██╔═══╝ <br>██║ ███╗<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",
+	H:"██╗  ██╗<br>██║  ██║<br>███████║<br>██╔══██║<br>██║  ██║<br>╚═╝  ╚═╝",
+	I:"███████╗<br>╚═███╔═╝<br>  ███║  <br>  ███║  <br>███████╗<br>╚══════╝",
+	J:"     ██╗<br>     ██║<br>     ██║<br>██   ██║<br>╚█████╔╝<br> ╚════╝ ",
+	K:"██╗  ██╗<br>██║ ██╔╝<br>█████╔╝ <br>██╔═██╗ <br>██║  ██╗<br>╚═╝  ╚═╝",
+	L:"██╗     <br>██║     <br>██║     <br>██║     <br>███████╗<br>╚══════╝",
+	M:"██╗  ██╗<br>███╗███║<br>██╔█╔██║<br>██║╚╝██║<br>██║  ██║<br>╚═╝  ╚═╝",
+	N:"██╗  ██╗<br>███╗ ██║<br>██╔█╗██║<br>██║╚███║<br>██║ ╚██║<br>╚═╝  ╚═╝",
+	O:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",
+	P:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔═══╝ <br>██║     <br>╚═╝     ",
+	Q:" █████╗ <br>██╔══██╗<br>██║  ██║<br>██║▄ ██║<br>╚█████╔╝<br> ╚══▀═╝ ",
+	R:"██████╗ <br>██╔══██╗<br>██████╔╝<br>██╔══██╗<br>██║  ██║<br>╚═╝  ╚═╝",
+	S:"███████╗<br>██╔════╝<br>███████╗<br>╚════██║<br>███████║<br>╚══════╝",
+	T:"███████╗<br>╚═███╔═╝<br>  ███║  <br>  ███║  <br>  ███║  <br>  ╚══╝  ",
+	U:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>██║  ██║<br>╚█████╔╝<br> ╚════╝ ",
+	V:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>╚██ ██╔╝<br> ╚███╔╝ <br>  ╚══╝  ",
+	W:"██╗  ██╗<br>██║  ██║<br>██║  ██║<br>██║█╗██║<br>╚██╔██╔╝<br> ╚═╝╚═╝ ",
+	X:"██╗  ██╗<br>╚██╗██╔╝<br> ╚███╔╝ <br> ██╔██╗ <br>██╔╝ ██╗<br>╚═╝  ╚═╝",
+	Y:"██╗  ██╗<br>██║  ██╝<br>╚██╗██╝ <br> ╚███║  <br>  ███║  <br>  ╚══╝  ",
+	Z:"███████╗<br>╚══███╔╝<br>  ███╔╝ <br> ███╔╝  <br>███████╗<br>╚══════╝",
+" ":"        <br>        <br>        <br>        <br>        <br>        "
+}
+
+var log_lines=[], log_element;
+var ip_lines=[], ip_delay=0, ip_element;
+var hex_lines=[], hex_index=0, hex_element;
+var map_lines=[], map_reset=0, map_element;
+var raw_data=[], raw_element;
+var matrix_data=[], matrix_delay=0, matrix_element;
+var sand_data=[], matrix_element;
+var skull_element;
+var state = {denied:false,error:false,cooldown:0};
+
+window.addEventListener("load",()=>{
+log_element = document.getElementById("log");
+ip_element = document.getElementById("ip");
+hex_element = document.getElementById("hex");
+map_element = document.getElementById("map");
+raw_element = document.getElementById("raw");
+skull_element = document.getElementById("skull");
+matrix_element = document.getElementById("matrix");
+sand_element = document.getElementById("sand");
+setInterval(updateLog,20);
+setInterval(ipLog,25);
+setInterval(hexLog,100);
+setInterval(mapLog,500);
+setInterval(rawLog,330);
+setInterval(skullUpdate,50);
+setInterval(timeUpdate,1000);
+setInterval(matrixUpdate,69);
+setInterval(sandUpdate,103);
+setInterval(updateState,250);
+timeUpdate();
+});
+
+function updateLog() {
+var a=Math.floor(Math.random()*4)+10,
+    b=Math.floor(Math.random()*2)+4,
+    c=Math.floor(Math.random()*2)+4,
+    d=30-a-b-c,
+    e=Math.floor(Math.random()*4)+10,
+    f=25-c+Math.floor(Math.random()*4);
+log_lines.push(`${randomString(a)}-${randomString(b)}-${randomString(c)}-${randomString(d)}|${randomString(e)}       ${randomString(f)}`);
+if (log_lines.length > 39) {log_lines.shift()};
+log_element.innerText = log_lines.map((e,i)=>i>log_lines.length-8?fillString(" ",33)+"|"+e.split("|")[1]:e).join("\r\n");
+}
+
+function ipLog() {
+if (ip_delay-- > 0 || Math.random() < .9) {return};
+ip_delay = Math.random() * 100;
+var events = ["TARGET ONLINE","TARGET OFFLINE","CONNECTION ESTABLISHED","NETWORK DISCONNECTED","VULNERABILITY DETECTED","COMPUTER BREACHED","FIREWALL DETECTED","ANTIVIRUS DETECTED","0-DAY VULNERABLE","OUTDATED FIREWALL","MISCONFIGURED FIREWALL","CONNECTION OPEN","INFECTED TARGET","SCANNING TARGET"],
+    mac = "XX:XX:XX:XX:XX:XX".replace(/X/g,()=>"0123456789ABCDEF".charAt(Math.floor(Math.random()*16))),
+    ip = Array.from({length:4},()=>Math.floor(Math.random()*256)).join('.').padStart(15," ");
+ip_lines.push(events[Math.floor(Math.random()*events.length)]+" | "+ip+" - "+mac);
+if (ip_lines.length > 15) {ip_lines.shift()};
+ip_element.innerText = ip_lines.join("\r\n");
+}
+
+function hexLog() {
+var data = Array.from({length:16},()=>Math.floor(Math.random()*256));
+hex_lines.push(`${hex_index.toString(16).toUpperCase().padStart(8,"0").slice(-8)} | ${data.map(e=>e.toString(16).toUpperCase().padStart(2,"0")).join(" ")} | ${String.fromCharCode(...data.map(e=>(e>=32&&e<=126)?e:63))}`);
+if (hex_lines.length > 43) {hex_lines.shift()};
+hex_element.innerText = [" Address | .0 .1 .2 .3 .4 .5 .6 .7 .8 .9 .A .B .C .D .E .F |   Text (ASCII)  ",...hex_lines].join("\r\n");
+hex_index++;
+}
+
+function mapLog() {
+if (--map_reset <= 0) {
+	map_lines = Array.from({length:20},()=>`▐${" ".repeat(98)}▌`);
+	map_reset = (Math.floor(Math.random() * 4) == 0) ? 5 : 1;
+};
+var palette_pool = [" ╴╵┘╶─└┴╷┐│┤┌┬├┼"," ╸╹┛╺━┗┻╻┓┃┫┏┳┣╋"," ??╝?═╚╩?╗║╣╔╦╠╬"],
+    palette_type = palette_pool[Math.floor(Math.random()*palette_pool.length)],
+    route = Array.from({length:99},()=>Math.floor(Math.random()*20));
+for (var i=0;i<98;i++) {
+	var a = route[i], b = route[i+1], p = route[i];
+	[a,b].map((e,h)=>e+( [-1,1].map(f=>f*(a>b?-1:1)) )[h]).map(e=>(e>=0&&e<map_lines.length)?(map_lines[e]=setCharAt(map_lines[e],i+1," ")):0);
+	while (true) {
+		var symbol_type = parseInt([a > b, b == p, a == p].map(e=>+e).join(""),2),
+		    symbol_map = [10,9,6,5,10,3,12,5][symbol_type];
+		map_lines[p] = setCharAt(map_lines[p],i+1,palette_type[symbol_map]);
+		if (p == b) {break};
+		p += (a == b) ? 0 : ((a < b) ? 1 : -1);
+	};
+};
+map_element.innerText = map_lines.join("\r\n");
+/*2
+ 1 4
+  8*/
+}
+
+function rawLog() {
+if (raw_data == 0) {
+	raw_data = Array.from({length:8*20},()=>Math.floor(Math.random()*256));
+};
+Array.from({length:Math.floor(Math.random()*raw_data.length)},()=>Math.floor(Math.random()*raw_data.length)).forEach(e=>{
+	raw_data[e] = Math.floor(Math.random()*256);
+});
+raw_element.innerHTML = raw_data.reduce((a,e,i)=>a+(i%8==0&&i!=0?"<br>":"")+e.toString(2).padStart(8,"0")+(i%8==7?"":" "),"");
+}
+
+function consoleLog() {
+/*var console_lines=[], console_element;
+
+[
+Found a new network, have at it *ip*
+I'll keep an eye out for new leads
+Hey guys, look at this one *ip*
+Do we actually know what this stuff is connected to
+I've got into a couple of the targets sent in this channel, will update soon
+Been a bit out of the loop, what should I be looking into
+Anyone got an exploit I can use for this server? *ip*
+I'm not sure what's left to find, I can't seem to get anywhere
+I just started a mass scanning effort to search for vulnerable servers
+I'm gonna look at a few previous servers of interest
+
+Can someone reach out with some more difficult targets?
+I think I got traced during a recent operation, any suggestions?
+We got no time to lose guys!
+Go go go *ip*
+All free users, prime target has been discovered *ip*
+Not sure if there is anything of interest here, but maybe you guys can take a peek *ip*
+Went looking around and found *ip* seems like a game server of some sort
+Found an interesting target, have we seen the address *mac* before?
+Good work everyone!
+]
+*/
+}
+
+function skullUpdate() {
+var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ###@@@   ";
+var index = new Array(6).fill(0).map(e=>Math.floor(Math.random()*(characters.length+1)));
+skull_element.innerHTML = ["                    :P",3,2,3,"K:<br>                ,",5,3,2,2,3,2,3,2,3,2,3,3,"L.<br>             ",4,"G",2,3,2,3,2,3,1,1,1,1,1,3,2,3,2,3,2,"Nr<br>         :k",3,2,3,2,2,2,1,1,0,1,0,1,0,1,0,1,1,1,1,2,3,2,3,2,3,"1,<br>     :5",2,3,2,3,2,3,2,3,3,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,2,2,2,3,2,3,2,3,3,"u.<br>  ",4,"0",2,2,2,3,2,3,2,3,2,3,"X",3,3,0,1,0,1,0,1,0,1,0,1,0,1,1,3,1,"P",3,2,3,2,3,2,3,2,3,2,"Nr<br>G",2,2,2,3,"  ",4,3,2,3,2,2,"  ",0,3,1,0,1,0,1,0,1,0,1,0,1,0,1,2,"2  ",3,2,3,2,3,". E",3,2,3,2,"S<br>",2,2,3,1,2,"G",5,3,"U.  ",4,"Su",3,2,0,1,0,1,0,1,0,1,0,1,0,1,1,2,0,"U1:  .k",3,"L",1,2,1,2,3,2,"<br>",3,2,1,1,3,2,3,"       ",4,2,3,3,1,1,0,1,0,1,0,1,0,1,0,3,3,2,":       ",3,2,3,1,1,2,3,"<br>",2,2,2,3,2,3,"         ",4,2,2,2,1,1,0,1,0,1,0,1,1,2,3,2,":         ",2,2,3,2,3,2,"<br>",2,2,0,"L",3,".          ",3,"N",3,2,1,1,0,1,0,1,1,2,3,"E",3,"          r",3,5,1,2,3,"<br>",2,2,"  ",2,"           ",1,"  ",0,3,0,1,0,1,1,2,"q  ",1,"          .",2,"  ",2,2,"<br>",2,2,0,"v",3,"           ",3,":u",2,1,1,0,1,0,1,1,3,5,4,3,"          .",3,"v",1,2,3,"<br>",2,3,2,3,2,5,"         0",2,3,2,1,1,0,1,0,1,0,1,3,2,3,2,"u         q",2,2,2,3,2,"<br>",3,2,1,3,3,2,"v       G",2,2,3,1,1,1,1,1,1,1,1,1,1,1,3,3,2,"5       F",2,3,1,1,2,3,"<br>",2,3,3,1,2,3,"PN",4,"   L",1,"E",3,2,0,1,1,1,1,2,3,2,1,1,0,1,1,2,3,"Z",1,4,"   rEq",3,2,1,3,3,2,"<br>",3,2,2,2,3,1,"  ",3,2,3,2,3,"  q",3,1,0,1,3,2,3,2,3,2,3,1,0,1,3,"L  ",3,2,3,2,3,"  ",2,3,2,3,2,1,"<br> ",5,2,2,2,2,"P",3,2,3,2,3,2,3,4,"G",2,0,1,3,3,".   ,",2,1,1,1,2,"qL",3,2,3,2,2,2,3,"q",3,2,3,3,"v<br>    ",4,"G",3,2,",",4,"0",2,1,2,3,2,1,1,0,2,"E  :  ",1,2,0,1,1,2,2,2,3,2,"P",4,4,2,2,"N:<br>       .   ",3,2,1,2,3,2,1,1,1,2,3,2,3,2,3,2,1,1,1,2,2,2,1,2,3,"<br>           ",2,3,2,3,".",4,2,1,3,3,2,3,2,3,2,2,3,1,2,"::",3,2,3,2,"<br>           ",3,2,2,2," .",3,2,3,".:",2,3,2," :",3,2,3,"  ",2,3,2,0,"<br>             :0 r",2,3,2,"  ",3,2,2," .",2,3,2,": P:<br>                 v",1,3," :",2,3,2," :",3,0,4,"<br>                     ,",3,2,3].map(e=>(typeof e=="string")?e:(characters[index[e]]??"")).join("");
+}
+
+function timeUpdate() {
+var timestamp = new Date();
+var hour = timestamp.getHours();
+setChar("th1",Math.floor(hour/10)||" ");
+setChar("th2",hour%10);
+var minute = timestamp.getMinutes();
+setChar("tm1",Math.floor(minute/10));
+setChar("tm2",minute%10);
+var second = timestamp.getSeconds();
+setChar("ts1",Math.floor(second/10));
+setChar("ts2",second%10);
+var month = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][timestamp.getMonth()];
+setChar("dm1",month[0]);
+setChar("dm2",month[1]);
+setChar("dm3",month[2]);
+var day = timestamp.getDate();
+setChar("dd1",Math.floor(day/10)||" ");
+setChar("dd2",day%10);
+var suffix = ["ST","ND","RD","TH"][({1:0,2:1,3:2,21:0,22:1,23:2,31:0})[day]??3];
+setChar("dd3",suffix[0]);
+setChar("dd4",suffix[1]);
+var year = timestamp.getFullYear();
+setChar("yy1",Math.floor(year/1000));
+setChar("yy2",Math.floor(year/100)%10);
+setChar("yy3",Math.floor(year/10)%10);
+setChar("yy4",year%10);
+function setChar(position,index) {document.getElementById(`${["time","date","year"]["tdy".indexOf(position[0])]}_${position.slice(1)}`).innerHTML=charArt[index]??""}
+}
+
+function sandUpdate() {
+var config = {
+	pallete:"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+	width:13,
+	height:22
+}
+if (sand_data.length == 0) {sand_data = Array.from(new Array(config.height),(e,u)=>fillString(" ",config.width))};
+var update = false;
+for (var r = config.height;--r >= 0;) {
+	if (Array.from(new Array(config.height-r).keys()).every(e=>!sand_data[config.height-1-e].includes(" ")) && Math.random() > .97) {
+		sand_data[r] = setCharAt(sand_data[r],Math.floor(Math.random() * config.width)," ");
+	};
+	var a = Array.from(new Array(config.width).keys()).filter(e=>sand_data[r][e]==" ");
+	shuffleArray(a);
+	if (r == 0) {
+		if (a.length > 0 && (!update || Math.random() > .7)) {
+			sand_data[r] = setCharAt(sand_data[r],a[0],config.pallete[Math.floor(Math.random()*config.pallete.length)]);
+		};
+	} else {
+		a.forEach(e=>{
+			if (sand_data[r-1][e] != " ") {
+				sand_data[r] = setCharAt(sand_data[r],e,sand_data[r-1][e]);
+				sand_data[r-1] = setCharAt(sand_data[r-1],e," ");
+				update = true;
+			}
+		});
+		a.filter(e=>sand_data[r][e]==" ").forEach(e=>{
+			var bias = (Math.random > .5) ? 1 : -1;
+			if (e+(1*bias) > -1 && e+(1*bias) < config.width && sand_data[r-1][e+(1*bias)] != " ") {
+				sand_data[r] = setCharAt(sand_data[r],e,sand_data[r-1][e+(1*bias)]);
+				sand_data[r-1] = setCharAt(sand_data[r-1],e+(1*bias)," ");
+				update = true;
+			} else if (e+(-1*bias) > -1 && e+(-1*bias) < config.width && sand_data[r-1][e+(-1*bias)] != " ") {
+				sand_data[r] = setCharAt(sand_data[r],e,sand_data[r-1][e+(-1*bias)]);
+				sand_data[r-1] = setCharAt(sand_data[r-1],e+(-1*bias)," ");
+				update = true;
+			};
+		});
+	}
+}
+sand_element.innerText = sand_data.join("\r\n");
+}
+
+function matrixUpdate() {
+var config = {
+	multi_min:1,
+	multi_max:7,
+	delay_min:1,
+	delay_max:2,
+	length:12,
+	width:41,
+	height:39
+}
+if (matrix_data.length == 0) {matrix_data = Array.from(new Array(config.height),(e,u)=>new Array(config.width).fill(0))};
+matrix_data.forEach((e,i)=>{
+	if (i == 0 && matrix_delay-- <= 0) {
+		matrix_delay = Math.floor(Math.random() * (config.delay_max - config.delay_min + 1)) + config.delay_min;
+		var candidates = e.reduce((a,e,i)=>e==0?a.concat(i):a,[]),
+			total = Math.floor(Math.random() * (config.multi_max - config.multi_min + 1)) + config.multi_min;
+	};
+	e.forEach((v,p)=>e[p]=Math.max(matrix_data[i-1]?.[p]==config.length-1?config.length:0,e[p]-1));
+	if (candidates?.length > 0) {
+		for (var i = total;i-- > 0;) {
+			e[candidates[Math.floor(Math.random() * candidates.length)]] = config.length;
+		};
+	};
+});
+matrix_element.innerHTML = matrix_data.map(e=>e.map(v=>v==0?" ":`<span style="display:inline-flex;align-items:center;justify-content:center;width:1ch;height:1em;text-align:center;opacity:${v/config.length}">${String.fromCodePoint(Math.floor(Math.random()*6592)+13312)}</span>`).join("")).join("<br>");
+//console.log(matrix_data.map(e=>[`|`,...e.map(v=>v==0?" ":v),`|`].join("")).join("\n"));
+}
+
+function updateState() {
+if (state.cooldown-- <= 0 && Math.floor(Math.random() * (state.denied ? 100 : 5)) == 0) {
+	state.denied = !state.denied;
+	state.error = false;
+	state.cooldown = 120;
+}
+if (state.denied && Math.floor(Math.random()*5) == 0) {
+	state.error = !state.error;
+}
+document.documentElement.classList.toggle("denied",state.denied);
+document.documentElement.classList.toggle("error",state.error);
+}
+
+function setCharAt(r,t,n) {if(t<0||t>=r.length)throw new Error("Index out of bounds");return r.substring(0,t)+n+r.substring(t+1)}
+function randomString(r) {var n="",t="0123456789";for(let a=0;a<r;a++){n+=t[Math.floor(10*Math.random())]}return n}
+function fillString(r,c) {var n="";for(let a=0;a<c;a++){n+=r[0]}return n}
+function shuffleArray(o){for(let t=o.length-1;t>0;t--){const f=Math.floor(Math.random()*(t+1));[o[t],o[f]]=[o[f],o[t]]}}
+function formatCharArt(r){return r.split("").filter((r=>null!=charArt[r])).map((r=>charArt[r].split("<br>"))).reduce(((r,t)=>r.map(((r,a)=>r+t[a]))),["","","","","",""]).join("<br>")}
+</script>
+</head>
+<body>
+	<pre class="header granted"> █████╗  ██████╗ ██████╗███████╗███████╗███████╗         █████╗ ██████╗  █████╗ ██╗  ██╗███████╗███████╗██████╗ <br>██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝        ██╔═══╝ ██╔══██╗██╔══██╗███╗ ██║╚═███╔═╝██╔════╝██╔══██╗<br>███████║██║     ██║     █████╗  ███████╗███████╗        ██║ ███╗██████╔╝███████║██╔█╗██║  ███║  █████╗  ██║  ██║<br>██╔══██║██║     ██║     ██╔══╝  ╚════██║╚════██║        ██║  ██║██╔══██╗██╔══██║██║╚███║  ███║  ██╔══╝  ██║  ██║<br>██║  ██║╚██████╗╚██████╗███████╗███████║███████║        ╚█████╔╝██║  ██║██║  ██║██║ ╚██║  ███║  ███████╗██████╔╝<br>╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝╚══════╝╚══════╝         ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝  ╚══╝  ╚══════╝╚═════╝ </pre>
+	<pre class="header denied"> █████╗  ██████╗ ██████╗███████╗███████╗███████╗        ██████╗ ███████╗██╗  ██╗███████╗███████╗██████╗ <br>██╔══██╗██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝        ██╔══██╗██╔════╝███╗ ██║╚═███╔═╝██╔════╝██╔══██╗<br>███████║██║     ██║     █████╗  ███████╗███████╗        ██║  ██║█████╗  ██╔█╗██║  ███║  █████╗  ██║  ██║<br>██╔══██║██║     ██║     ██╔══╝  ╚════██║╚════██║        ██║  ██║██╔══╝  ██║╚███║  ███║  ██╔══╝  ██║  ██║<br>██║  ██║╚██████╗╚██████╗███████╗███████║███████║        ██████╔╝███████╗██║ ╚██║███████╗███████╗██████╔╝<br>╚═╝  ╚═╝ ╚═════╝ ╚═════╝╚══════╝╚══════╝╚══════╝        ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═════╝ </pre>
+	<pre class="scc" id="scc">  ╔═════════════════════════════════════════╗<br>  ║ <span>⬧</span>  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  <span>⬧</span> ║<br>  ║                                         ║<br>  ║ ┃  ████████╗    ███████╗    ███████╗  ┃ ║<br>  ║ ┃  ██╔═════╝   ██╔═════╝   ██╔═════╝  ┃ ║<br>  ║ ┃  ████████╗   ██║         ██║        ┃ ║<br>  ║ ┃  ╚═════██║   ██║         ██║        ┃ ║<br>  ║ ┃  ████████║   ╚███████╗   ╚███████╗  ┃ ║<br>  ║ ┃  ╚═══════╝    ╚══════╝    ╚══════╝  ┃ ║<br>  ║                                         ║<br>  ║ <span>⬧</span>  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  <span>⬧</span> ║<br>  ╚═════════════════════════════════════════╝</pre>
+	<pre class="log" id="log"></pre>
+	<pre class="ip" id="ip"></pre>
+	<pre class="hex" id="hex"></pre>
+	<pre class="map" id="map"></pre>
+	<pre class="raw" id="raw"></pre>
+	<pre class="skull" id="skull"></pre>
+	<pre class="matrix" id="matrix"></pre>
+	<pre class="sand" id="sand"></pre>
+	<div class="time">
+		<pre id="time_h1"></pre>
+		<pre id="time_h2"></pre>
+		<pre><br> ██╗ <br> ╚═╝<br> ██╗<br> ╚═╝</pre>
+		<pre id="time_m1"></pre>
+		<pre id="time_m2"></pre>
+		<pre><br> ██╗ <br> ╚═╝<br> ██╗<br> ╚═╝</pre>
+		<pre id="time_s1"></pre>
+		<pre id="time_s2"></pre>
+	</div>
+	<div class="date">
+		<pre id="date_m1"></pre>
+		<pre id="date_m2"></pre>
+		<pre id="date_m3"></pre>
+		<pre>     </pre>
+		<pre id="date_d1"></pre>
+		<pre id="date_d2"></pre>
+		<pre id="date_d3"></pre>
+		<pre id="date_d4"></pre>
+	</div>
+	<div class="year">
+		<pre id="year_y1"></pre>
+		<pre id="year_y2"></pre>
+		<pre id="year_y3"></pre>
+		<pre id="year_y4"></pre>
+	</div>
+	<div class="alert">
+		<div>
+			<pre>88888888888  88888888ba   88888888ba     ,ad8888ba,    88888888ba   <br>88           88      "8b  88      "8b   d8"'    `"8b   88      "8b  <br>88           88      ,8P  88      ,8P  d8'        `8b  88      ,8P  <br>88aaaaa      88aaaaaa8P'  88aaaaaa8P'  88          88  88aaaaaa8P'  <br>88"""""      88""""88'    88""""88'    88          88  88""""88'    <br>88           88    `8b    88    `8b    Y8,        ,8P  88    `8b    <br>88           88     `8b   88     `8b    Y8a.    .a8P   88     `8b   <br>88888888888  88      `8b  88      `8b    `"Y8888Y"'    88      `8b  </pre>
+		</div>
+	</div>
+</body>
+</html>
+<!--
+
+Make error alert show up in a flickering appearance and disappearance animation where it progressively flickers into solid opacity and vice versa
+	similar animation will be applied to color transition
+	maybe make the transition effect with js exclusively like dheusta flickering intro?
+State will be controlled with a class called .error being set on the html element
+Header content will change to say access denied during the error animation
+https://patorjk.com/software/taag/
+Use some combination of stepped animations too?
+	Leave step on color animations and only do the flicker on the banner and access denied text?
+-->
